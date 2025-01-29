@@ -1,54 +1,94 @@
-// src/components/CreateTaskForm.js
 import React, { useState } from 'react';
+import { Form, Input, Button, notification } from 'antd';
 
 const CreateTaskForm = ({ onTaskCreated }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [form] = Form.useForm(); // Initialize the form
+  const [loading, setLoading] = useState(false); // State to track form submission
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const task = { title, description };
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const values = await form.validateFields(); // Ensure all validations pass before submission
+      const { title, description } = values;
 
-    fetch('http://localhost:5000/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(task),
-    })
-      .then((response) => response.json())
-      .then((newTask) => {
-        onTaskCreated(newTask); // Pass the new task to the parent
-        setTitle('');
-        setDescription('');
-      })
-      .catch((error) => console.error('Error creating task:', error));
+      const task = { title, description };
+      const response = await fetch('http://localhost:5000/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(task),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create task');
+      }
+
+      const newTask = await response.json();
+      onTaskCreated(newTask); // Pass the new task to the parent
+      form.resetFields(); // Reset form fields after submission
+
+      notification.success({
+        message: 'Task Created Successfully',
+        description: `The task "${newTask.title}" has been added.`,
+      });
+    } catch (error) {
+      console.error('Error creating task:', error);
+      notification.error({
+        message: 'Error',
+        description: 'Failed to create task. Please try again later.',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8">
+    <Form
+      form={form}
+      layout="vertical"
+      className="mb-8"
+      onFinish={handleSubmit} // Triggers validation first
+    >
       <h2 className="text-xl font-bold mb-4">Create New Task</h2>
-      <div className="mb-4">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Task Title"
-          className="border p-2 w-full rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+
+      <Form.Item
+        name="title"
+        label="Task Title"
+        rules={[
+          { required: true, message: 'Please input the task title!' },
+          { max: 100, message: 'Title must be less than 100 characters' },
+        ]}
+      >
+        <Input placeholder="Task Title" />
+      </Form.Item>
+
+      <Form.Item
+        name="description"
+        label="Task Description"
+        rules={[
+          { required: true, message: 'Please input the task description!' },
+          { max: 150, message: 'Description must be less than 150 characters' },
+        ]}
+      >
+        <Input.TextArea
           placeholder="Task Description"
-          className="border p-2 w-full rounded"
-        ></textarea>
-      </div>
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Add Task
-      </button>
-    </form>
+          autoSize={{ minRows: 4, maxRows: 6 }}
+        />
+      </Form.Item>
+
+      <Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          loading={loading} // Disable button while submitting
+          className="bg-blue-500 text-white hover:bg-blue-700"
+        >
+          {loading ? 'Submitting...' : 'Add Task'}
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 

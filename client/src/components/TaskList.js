@@ -1,23 +1,17 @@
-// src/components/TaskList.js
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import TaskCard from './TaskCard';
 
-const TaskList = () => {
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    fetch('http://localhost:5000/tasks')
-      .then((response) => response.json())
-      .then((data) => setTasks(data))
-      .catch((error) => console.error('Error fetching tasks:', error));
-  }, []);
-
+const TaskList = ({ tasks, onTaskCompleted }) => {
   return (
     <div className="task-list">
       <h2 className="text-xl font-bold mb-4">Todo Tasks</h2>
-      {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
-      ))}
+      {tasks.length > 0 ? (
+        tasks.map((task) => (
+          <TaskCard key={task.id} task={task} onTaskCompleted={onTaskCompleted} />
+        ))
+      ) : (
+        <div className='text-gray-600 text-center'>No tasks found.</div>
+      )}
     </div>
   );
 };
