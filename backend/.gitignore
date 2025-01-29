@@ -1,0 +1,23 @@
+# Node.js dependencies
+/node_modules
+
+# Prisma files (Prisma generates this directory)
+/prisma/migrations
+
+# Environment variables file (contains sensitive information)
+.env
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# npm debug file
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Typescript build output
+/dist
