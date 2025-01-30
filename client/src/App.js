@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import CreateTaskForm from './components/CreateTaskForm';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// toast.configure();
 
 const App = () => {
   const [tasks, setTasks] = useState([]);

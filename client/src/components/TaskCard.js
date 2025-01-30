@@ -64,6 +64,9 @@
 
 
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const TaskCard = ({ task, onTaskCompleted }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -84,12 +87,13 @@ const TaskCard = ({ task, onTaskCompleted }) => {
     })
       .then((response) => response.json())
       .then(() => {
-        alert(`Task "${task.title}" has been marked as completed.`);
+        // alert(`Task "${task.title}" has been marked as completed.`);
+        toast.success(`Task "${task.title}" has been marked as completed.`);
         onTaskCompleted(task.id); // Remove task from the list
       })
       .catch((error) => {
         console.error('Error marking task as completed:', error);
-        alert('There was an issue completing the task. Please try again later.');
+        toast.error('There was an issue completing the task. Please try again later.');
       });
   };
 
@@ -106,10 +110,23 @@ const TaskCard = ({ task, onTaskCompleted }) => {
       {isModalVisible && (
         <div className="modal" style={{ position: 'fixed', top: '0', left: '0', width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div className="modal-content" style={{ background: 'white', padding: '20px', borderRadius: '5px', textAlign: 'center' }}>
-            <h4>Confirm Task Completion</h4>
-            <p>Are you sure you want to mark the task "{task.title}" as completed?</p>
-            <button onClick={handleComplete} style={{ marginRight: '10px', padding: '8px 16px', backgroundColor: 'green', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>Yes</button>
-            <button onClick={handleCancel} style={{ padding: '8px 16px', backgroundColor: 'red', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>No</button>
+            <h4 className='font-semibold'>Confirm Task Completion</h4>
+            <p className='mt-[10px]'>Are you sure you want to mark the task "{task.title}" as completed?</p>
+            <div className='mt-[20px]'>
+            <button 
+  onClick={handleComplete} 
+  className="mr-4 px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-300"
+>
+  Yes
+</button>
+<button 
+  onClick={handleCancel} 
+  className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition duration-300"
+>
+  No
+</button>
+
+            </div>
           </div>
         </div>
       )}
