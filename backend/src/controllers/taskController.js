@@ -16,19 +16,20 @@ const getTasks = async (req, res) => {
 };
 
 const createTask = async (req, res) => {
-  const { title, description } = req.body;
-  try {
-    const task = await prisma.task.create({
-      data: {
-        title,
-        description: description || '',  // Set an empty string if description is not provided
-      },
-    });
-    res.status(201).json(task);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create task' });
-  }
-};
+    const { title, description } = req.body;
+    try {
+      const task = await prisma.task.create({
+        data: {
+          title,
+          description: description || '',  // Set an empty string if description is not provided
+        },
+      });
+      res.status(201).json(task);
+    } catch (error) {
+      console.error('Error creating task:', error);  // Log the full error
+      res.status(500).json({ error: 'Failed to create task', details: error.message });
+    }
+  };
 
 const completeTask = async (req, res) => {
   const { id } = req.params;
